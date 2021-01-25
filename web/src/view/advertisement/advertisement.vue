@@ -6,7 +6,7 @@
           <el-button @click="onSubmit" type="primary">查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="openDialog" type="primary">新增TG账户</el-button>
+          <el-button @click="openDialog" type="primary">新增广告</el-button>
         </el-form-item>
         <el-form-item>
           <el-popover placement="top" v-model="deleteVisible" width="160">
@@ -34,13 +34,13 @@
          <template slot-scope="scope">{{scope.row.CreatedAt|formatDate}}</template>
     </el-table-column>
     
-    <el-table-column label="appId" prop="apiId" width="120"></el-table-column> 
+    <el-table-column label="text字段" prop="text" ></el-table-column> 
     
-    <el-table-column label="apiHash" prop="apiHash" ></el-table-column> 
+    <el-table-column label="key字段" prop="key" width="120"></el-table-column> 
     
       <el-table-column label="按钮组" width="180">
         <template slot-scope="scope">
-          <el-button class="table-button" @click="updateAccount(scope.row)" size="small" type="primary" icon="el-icon-edit">变更</el-button>
+          <el-button class="table-button" @click="updateAdvertisement(scope.row)" size="small" type="primary" icon="el-icon-edit">变更</el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -59,11 +59,12 @@
 
     <el-dialog :before-close="closeDialog" :visible.sync="dialogFormVisible" title="弹窗操作">
       <el-form :model="formData" label-position="right" label-width="80px">
-         <el-form-item label="appId:"><el-input v-model.number="formData.apiId" clearable placeholder="请输入"></el-input>
+         <el-form-item label="text字段:">
+            <el-input v-model="formData.text" clearable placeholder="请输入" ></el-input>
       </el-form-item>
        
-         <el-form-item label="apiHash:">
-            <el-input v-model="formData.apiHash" clearable placeholder="请输入" ></el-input>
+         <el-form-item label="key字段:">
+            <el-input v-model="formData.key" clearable placeholder="请输入" ></el-input>
       </el-form-item>
        </el-form>
       <div class="dialog-footer" slot="footer">
@@ -76,27 +77,27 @@
 
 <script>
 import {
-    createAccount,
-    deleteAccount,
-    deleteAccountByIds,
-    updateAccount,
-    findAccount,
-    getAccountList
-} from "@/api/telegram_account";  //  此处请自行替换地址
+    createAdvertisement,
+    deleteAdvertisement,
+    deleteAdvertisementByIds,
+    updateAdvertisement,
+    findAdvertisement,
+    getAdvertisementList
+} from "@/api/advertisement";  //  此处请自行替换地址
 import { formatTimeToStr } from "@/utils/date";
 import infoList from "@/mixins/infoList";
 export default {
-  name: "Account",
+  name: "Advertisement",
   mixins: [infoList],
   data() {
     return {
-      listApi: getAccountList,
+      listApi: getAdvertisementList,
       dialogFormVisible: false,
       type: "",
       deleteVisible: false,
       multipleSelection: [],formData: {
-            apiId:0,
-            apiHash:"",
+            text:"",
+            key:"",
             
       }
     };
@@ -134,7 +135,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-           this.deleteAccount(row);
+           this.deleteAdvertisement(row);
         });
       },
       async onDelete() {
@@ -150,7 +151,7 @@ export default {
           this.multipleSelection.map(item => {
             ids.push(item.ID)
           })
-        const res = await deleteAccountByIds({ ids })
+        const res = await deleteAdvertisementByIds({ ids })
         if (res.code == 0) {
           this.$message({
             type: 'success',
@@ -163,24 +164,24 @@ export default {
           this.getTableData()
         }
       },
-    async updateAccount(row) {
-      const res = await findAccount({ ID: row.ID });
+    async updateAdvertisement(row) {
+      const res = await findAdvertisement({ ID: row.ID });
       this.type = "update";
       if (res.code == 0) {
-        this.formData = res.data.reaccount;
+        this.formData = res.data.readvertisement;
         this.dialogFormVisible = true;
       }
     },
     closeDialog() {
       this.dialogFormVisible = false;
       this.formData = {
-          apiId:0,
-          apiHash:"",
+          text:"",
+          key:"",
           
       };
     },
-    async deleteAccount(row) {
-      const res = await deleteAccount({ ID: row.ID });
+    async deleteAdvertisement(row) {
+      const res = await deleteAdvertisement({ ID: row.ID });
       if (res.code == 0) {
         this.$message({
           type: "success",
@@ -196,13 +197,13 @@ export default {
       let res;
       switch (this.type) {
         case "create":
-          res = await createAccount(this.formData);
+          res = await createAdvertisement(this.formData);
           break;
         case "update":
-          res = await updateAccount(this.formData);
+          res = await updateAdvertisement(this.formData);
           break;
         default:
-          res = await createAccount(this.formData);
+          res = await createAdvertisement(this.formData);
           break;
       }
       if (res.code == 0) {
