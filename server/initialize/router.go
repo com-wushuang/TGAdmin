@@ -49,6 +49,7 @@ func Routers() *gin.Engine {
 		router.InitWorkflowProcessRouter(PrivateGroup)       // 工作流相关接口
 		router.InitAccountRouter(PrivateGroup)               //TG账号管理接口
 		router.InitAdvertisementRouter(PrivateGroup)         //广告管理接口
+		router.InitJobRouter(PrivateGroup)                   //任务管理
 	}
 	global.GVA_LOG.Info("router register success")
 	return Router
